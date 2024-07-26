@@ -2,6 +2,13 @@ use std::sync::Arc;
 
 use actix_cors::Cors;
 use actix_web::{web, App, HttpServer};
+
+//***圧縮？のためのライブラリを追加
+use actix_web::middleware::Compress;
+//*** レートリミットのためのライブラリを追加
+//use actix_governor::{Governor, GovernorConfigBuilder};
+
+
 use api::{
     auth_handler, health_check_handler, map_handler, order_handler, result_handler,
     tow_truck_handler,
@@ -63,12 +70,23 @@ async fn main() -> std::io::Result<()> {
             .supports_credentials()
             .max_age(3600);
 
+        //*** レートリミッティングの設定
+        //let governor_conf = GovernorConfigBuilder::default()
+        //    .per_second(10)  // 1秒あたり10リクエストまで
+        //    .burst_size(5)   // バーストで5リクエストまで許可
+        //    .finish()
+        //    .unwrap();
+
         App::new()
             .app_data(tow_truck_service.clone())
             .app_data(auth_service.clone())
             .app_data(order_service.clone())
             .app_data(map_service.clone())
             .wrap(cors)
+            //*** レートリミットのミドルウェアを追加
+            //.wrap(Governor::new(&governor_conf))
+            //***圧縮を有効にする？
+            .wrap(Compress::default())
             .service(
                 web::scope("/api")
                     .service(
@@ -152,7 +170,8 @@ async fn main() -> std::io::Result<()> {
             )
     })
     .bind(format!("0.0.0.0:{port}"))?
-    .workers(1)
+    .workers(2)
+    //***workerの数を増やす
     .run()
     .await
 }
