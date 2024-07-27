@@ -15,17 +15,21 @@ impl MapRepositoryImpl {
         MapRepositoryImpl { pool }
     }
 }
-
+// **queryのSELECT *を個別指定に変更
 impl MapRepository for MapRepositoryImpl {
     async fn get_all_nodes(&self, area_id: Option<i32>) -> Result<Vec<Node>, sqlx::Error> {
         let where_clause = match area_id {
             Some(_) => "WHERE area_id = ?",
             None => "",
         };
-
+		
         let sql = format!(
             "SELECT
-                * 
+                id,
+				name,
+				area_id,
+				x,
+				y
             FROM
                 nodes
             {}
