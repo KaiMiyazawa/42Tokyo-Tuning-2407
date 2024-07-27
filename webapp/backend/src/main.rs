@@ -7,6 +7,9 @@ use actix_web::{web, App, HttpServer};
 use actix_web::middleware::Compress;
 //*** レートリミットのためのライブラリを追加
 //use actix_governor::{Governor, GovernorConfigBuilder};
+//*** コネクションプールのライブラリを追加
+//use sqlx::postgres::PgPool;
+
 
 
 use api::{
@@ -35,6 +38,7 @@ mod utils;
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let pool = infrastructure::db::create_pool().await;
+    //let pool = web::Data::new(pool);
     let mut port = 8080;
 
     if cfg!(debug_assertions) {
@@ -78,6 +82,7 @@ async fn main() -> std::io::Result<()> {
         //    .unwrap();
 
         App::new()
+            //.app_data(pool.clone())
             .app_data(tow_truck_service.clone())
             .app_data(auth_service.clone())
             .app_data(order_service.clone())
@@ -87,6 +92,7 @@ async fn main() -> std::io::Result<()> {
             //.wrap(Governor::new(&governor_conf))
             //***圧縮を有効にする？
             .wrap(Compress::default())
+            //.wrap(Compress::new(ContentEncoding::Br))
             .service(
                 web::scope("/api")
                     .service(
