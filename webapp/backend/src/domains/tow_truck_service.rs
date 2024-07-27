@@ -128,5 +128,5 @@ impl<
 }
 
 fn calculate_distance(graph: &Graph, node_id_1: i32, node_id_2: i32) -> i32 {
-    graph.shortest_path(node_id_1, node_id_2)
+    graph.dijkstra(node_id_1, node_id_2)
 }
