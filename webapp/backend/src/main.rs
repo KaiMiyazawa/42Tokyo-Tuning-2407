@@ -11,7 +11,6 @@ use actix_web::middleware::Compress;
 //use sqlx::postgres::PgPool;
 
 
-
 use api::{
     auth_handler, health_check_handler, map_handler, order_handler, result_handler,
     tow_truck_handler,
