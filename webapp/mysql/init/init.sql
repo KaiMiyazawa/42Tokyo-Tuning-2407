@@ -1,15 +1,16 @@
 -- テーブル作成
+-- nameVARCHAR(255)->nameCHAR(7)
 CREATE TABLE IF NOT EXISTS areas (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name CHAR(7) NOT NULL
 );
-
+-- roleVARCHAR(255)->roleVARCHAR(11)
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL DEFAULT '$argon2id$v=19$m=19456,t=2,p=1$XATPp8QqqTtg3VrdJ/QPfw$r3o9L6zWQc/Zq70GbP33Gl9N50jGUSMMvYcl7M05ukw',
     profile_image VARCHAR(255) NOT NULL DEFAULT 'default.png',
-    role VARCHAR(255) NOT NULL
+    role VARCHAR(11) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS sessions (
@@ -24,11 +25,11 @@ CREATE TABLE IF NOT EXISTS dispatchers (
     user_id INT NOT NULL,
     area_id INT NOT NULL
 );
-
+-- statusVARCHAR(50)->statusVARCHAR(11)
 CREATE TABLE IF NOT EXISTS tow_trucks (
     id INT AUTO_INCREMENT PRIMARY KEY,
     driver_id INT NOT NULL,
-    status VARCHAR(50) NOT NULL DEFAULT 'available',
+    status VARCHAR(11) NOT NULL DEFAULT 'available',
     area_id INT NOT NULL
 );
 
@@ -54,13 +55,13 @@ CREATE TABLE IF NOT EXISTS locations (
     node_id INT NOT NULL,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 );
-
+-- statusVARCHAR(50)->status VARCHAR(11)
 CREATE TABLE IF NOT EXISTS orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     client_id INT NOT NULL,
     dispatcher_id INT,
     tow_truck_id INT,
-    status VARCHAR(50) NOT NULL DEFAULT 'pending',
+    status VARCHAR(11) NOT NULL DEFAULT 'pending',
     node_id INT NOT NULL,
     car_value DOUBLE NOT NULL,
     order_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
