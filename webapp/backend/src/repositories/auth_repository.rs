@@ -13,19 +13,19 @@ impl AuthRepositoryImpl {
         AuthRepositoryImpl { pool }
     }
 }
-
+// **queryのSELECT *を個別指定に変更
 impl AuthRepository for AuthRepositoryImpl {
     async fn find_user_by_id(&self, id: i32) -> Result<Option<User>, AppError> {
-        let user = sqlx::query_as::<_, User>("SELECT * FROM users WHERE id = ?")
+        let user = sqlx::query_as::<_, User>("SELECT id, username, password, profile_image, role FROM users WHERE id = ?")
             .bind(id)
             .fetch_optional(&self.pool)
             .await?;
 
         Ok(user)
     }
-
+// **queryのSELECT *を個別指定に変更
     async fn find_user_by_username(&self, username: &str) -> Result<Option<User>, AppError> {
-        let user = sqlx::query_as::<_, User>("SELECT * FROM users WHERE username = ?")
+        let user = sqlx::query_as::<_, User>("SELECT id, username, password, profile_image, role FROM users WHERE username = ?")
             .bind(username)
             .fetch_optional(&self.pool)
             .await?;
@@ -44,10 +44,10 @@ impl AuthRepository for AuthRepositoryImpl {
 
         Ok(profile_image_name)
     }
-
+// **queryのSELECT *を個別指定に変更
     async fn authenticate_user(&self, username: &str, password: &str) -> Result<User, AppError> {
         let user =
-            sqlx::query_as::<_, User>("SELECT * FROM users WHERE username = ? AND password = ?")
+            sqlx::query_as::<_, User>("SELECT id, username, password, profile_image, role FROM users WHERE username = ? AND password = ?")
                 .bind(username)
                 .bind(password)
                 .fetch_one(&self.pool)
@@ -90,35 +90,35 @@ impl AuthRepository for AuthRepositoryImpl {
 
         Ok(())
     }
-
+// **queryのSELECT *を個別指定に変更
     async fn find_session_by_session_token(
         &self,
         session_token: &str,
     ) -> Result<Session, AppError> {
         let session =
-            sqlx::query_as::<_, Session>("SELECT * FROM sessions WHERE session_token = ?")
+            sqlx::query_as::<_, Session>("SELECT id, user_id, session_token, is_valid FROM sessions WHERE session_token = ?")
                 .bind(session_token)
                 .fetch_one(&self.pool)
                 .await?;
 
         Ok(session)
     }
-
+// **queryのSELECT *を個別指定に変更
     async fn find_dispatcher_by_id(&self, id: i32) -> Result<Option<Dispatcher>, AppError> {
-        let dispatcher = sqlx::query_as::<_, Dispatcher>("SELECT * FROM dispatchers WHERE id = ?")
+        let dispatcher = sqlx::query_as::<_, Dispatcher>("SELECT id, user_id, area_id FROM dispatchers WHERE id = ?")
             .bind(id)
             .fetch_optional(&self.pool)
             .await?;
 
         Ok(dispatcher)
     }
-
+// **queryのSELECT *を個別指定に変更
     async fn find_dispatcher_by_user_id(
         &self,
         user_id: i32,
     ) -> Result<Option<Dispatcher>, AppError> {
         let dispatcher =
-            sqlx::query_as::<_, Dispatcher>("SELECT * FROM dispatchers WHERE user_id = ?")
+            sqlx::query_as::<_, Dispatcher>("SELECT id, user_id, area_id FROM dispatchers WHERE user_id = ?")
                 .bind(user_id)
                 .fetch_optional(&self.pool)
                 .await?;

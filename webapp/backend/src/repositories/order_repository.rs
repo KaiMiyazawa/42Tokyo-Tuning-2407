@@ -15,11 +15,20 @@ impl OrderRepositoryImpl {
     }
 }
 
+// **queryのSELECT *を個別指定に変更
 impl OrderRepository for OrderRepositoryImpl {
     async fn find_order_by_id(&self, id: i32) -> Result<Order, AppError> {
         let order = sqlx::query_as::<_, Order>(
-            "SELECT 
-                *
+            "SELECT
+				id,
+				client_id,
+				dispatcher_id,
+				tow_truck_id,
+				status,
+				node_id,
+				car_value,
+				completed_time,
+				order_time
             FROM
                 orders 
             WHERE
