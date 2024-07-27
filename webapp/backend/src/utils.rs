@@ -8,10 +8,10 @@ use crate::errors::AppError;
 
 pub fn generate_session_token() -> String {
     let mut rng = rand::thread_rng();
+	let chars = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     let token: String = (0..30)
         .map(|_| {
             let idx = rng.gen_range(0..62);
-            let chars = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
             chars[idx] as char
         })
         .collect();
