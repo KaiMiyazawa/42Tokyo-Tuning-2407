@@ -98,25 +98,47 @@ impl TowTruckRepository for TowTruckRepositoryImpl {
 
         Ok(())
     }
-
+	//**サブクエリをCTEに変更
     async fn find_tow_truck_by_id(&self, id: i32) -> Result<Option<TowTruck>, AppError> {
         let tow_truck = sqlx::query_as::<_, TowTruck>(
-            "SELECT
-                tt.id, tt.driver_id, u.username AS driver_username, tt.status, l.node_id, tt.area_id
-            FROM
-                tow_trucks tt
-            JOIN
-                users u 
-            ON
-                tt.driver_id = u.id
-            JOIN
-                locations l
-            ON
-                tt.id = l.tow_truck_id
-            WHERE
-                tt.id = ?
-            AND
-                l.timestamp = (SELECT MAX(timestamp) FROM locations WHERE tow_truck_id = tt.id)",
+				// "SELECT
+				// 	tt.id, tt.driver_id, u.username AS driver_username, tt.status, l.node_id, tt.area_id
+				// FROM
+				// 	tow_trucks tt
+				// JOIN
+				// 	users u 
+				// ON
+				// 	tt.driver_id = u.id
+				// JOIN
+				// 	locations l
+				// ON
+				// 	tt.id = l.tow_truck_id
+				// WHERE
+				// 	tt.id = ?
+				// AND
+				// 	l.timestamp = (SELECT MAX(timestamp) FROM locations WHERE tow_truck_id = tt.id)",
+				"WITH LatestLocations AS (
+					SELECT tow_truck_id, MAX(timestamp) AS latest_timestamp
+					FROM locations
+					GROUP BY tow_truck_id
+				)
+				SELECT
+					tt.id,
+					tt.driver_id,
+					u.username AS driver_username,
+					tt.status,
+					l.node_id,
+					tt.area_id
+				FROM
+					tow_trucks tt
+				JOIN
+					users u ON tt.driver_id = u.id
+				JOIN
+					LatestLocations ll ON tt.id = ll.tow_truck_id
+				JOIN
+					locations l ON tt.id = l.tow_truck_id AND l.timestamp = ll.latest_timestamp
+				WHERE
+					tt.id = ?",
         )
         .bind(id)
         .fetch_optional(&self.pool)
