@@ -9,7 +9,8 @@
 
 ## Result
 Point	: 42350  
-Rank	: 8 / 25?
+Rank	: 8 / 25?  
+[news link](https://x.com/42_tokyo/status/1818576430906982426)
 
 ## Strategy
 - SQLのクエリの最適化
